@@ -34,11 +34,10 @@ module "cloudwatch_log_retention_manager" {
   # Disable creation of the package to use the package distributed in the module
   create_package = false
 
-  environment_variables = {
-    RETAIN_DAYS = 90
-  }
-
-  schedule_expression = "rate(6 hours)"
+  retention_in_days   = 90
+  log_group_prefixes  = ["/aws/bedrock-agentcore/runtimes/"]
+  schedule_expression = "rate(1 hour)"
+  scan_all_regions    = false
   # role_arn = "arn:aws:iam::835367859851:role/my-custom-role"
 
   tags = local.tags

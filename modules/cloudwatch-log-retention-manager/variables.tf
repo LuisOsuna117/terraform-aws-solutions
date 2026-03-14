@@ -48,13 +48,13 @@ variable "source_path" {
   default     = null
 }
 
-variable "memory_size" {
+variable "lambda_memory_size" {
   description = "Amount of memory in MB your Lambda Function can use at runtime. Valid value between 128 MB to 10,240 MB (10 GB), in 64 MB increments."
   type        = number
   default     = 256
 }
 
-variable "timeout" {
+variable "lambda_timeout" {
   description = "The amount of time your Lambda Function has to run in seconds."
   type        = number
   default     = 30
@@ -66,10 +66,22 @@ variable "environment_variables" {
   default     = {}
 }
 
-variable "cloudwatch_logs_retention_in_days" {
-  description = "Specifies the number of days you want to retain log events in the specified log group. Possible values are: 1, 3, 5, 7, 14, 30, 60, 90, 120, 150, 180, 365, 400, 545, 731, 1827, and 3653."
+variable "retention_in_days" {
+  description = "Specifies the number of days to retain matching log events. Possible values are: 1, 3, 5, 7, 14, 30, 60, 90, 120, 150, 180, 365, 400, 545, 731, 1827, and 3653."
   type        = number
   default     = 90
+}
+
+variable "log_group_prefixes" {
+  description = "List of CloudWatch log group prefixes to manage. The Lambda reconciles groups whose names start with any configured prefix."
+  type        = list(string)
+  default     = ["/aws/bedrock-agentcore/runtimes/"]
+}
+
+variable "scan_all_regions" {
+  description = "Whether to scan all AWS regions. When false, only the Lambda's current region is scanned."
+  type        = bool
+  default     = false
 }
 
 # EventBridge
@@ -82,7 +94,7 @@ variable "eventbridge_role_name" {
 variable "schedule_expression" {
   description = "Schedule expression for EventBridge to trigger Lambda function. Can be cron() or rate()."
   type        = string
-  default     = "rate(12 hours)"
+  default     = "rate(1 hour)"
 }
 
 variable "role_arn" {

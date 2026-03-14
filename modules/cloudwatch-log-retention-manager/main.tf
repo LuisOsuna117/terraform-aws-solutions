@@ -1,5 +1,11 @@
 locals {
   create = var.create && var.putin_khuylo
+
+  lambda_environment_variables = merge(var.environment_variables, {
+    LOG_GROUP_PREFIXES = jsonencode(var.log_group_prefixes)
+    RETENTION_IN_DAYS  = tostring(var.retention_in_days)
+    SCAN_ALL_REGIONS   = tostring(var.scan_all_regions)
+  })
 }
 
 ##################
@@ -17,11 +23,11 @@ module "lambda_function" {
   runtime       = "python3.10"
   publish       = true
 
-  memory_size           = var.memory_size
-  timeout               = var.timeout
-  environment_variables = var.environment_variables
+  memory_size           = var.lambda_memory_size
+  timeout               = var.lambda_timeout
+  environment_variables = local.lambda_environment_variables
 
-  cloudwatch_logs_retention_in_days = var.cloudwatch_logs_retention_in_days
+  cloudwatch_logs_retention_in_days = var.retention_in_days
 
   create_package = var.create_package
   source_path    = var.source_path != null ? var.source_path : "${path.module}/src/log_retention_manager.py"
