@@ -2,7 +2,7 @@
 
 Terraform module that creates a Lambda Function triggered by EventBridge Scheduler.
 
-Lambda Function goes through all AWS regions and sets the retention period of CloudWatch Logs to the numeric value (`RETAIN_DAYS`) if it wasn't specified already.
+The Lambda scans CloudWatch log groups whose names start with any configured prefix and reconciles their retention policy to the configured value. By default it scans only the Lambda region, but it can optionally scan all AWS regions.
 
 This Terraform module is the part of [serverless.tf framework](https://github.com/antonbabenko/serverless.tf), which aims to simplify all operations when working with the serverless in Terraform.
 

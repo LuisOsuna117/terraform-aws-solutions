@@ -2,7 +2,7 @@
 
 Terraform module that creates a Lambda Function triggered by EventBridge Scheduler.
 
-Lambda Function goes through all AWS regions and sets the retention period of CloudWatch Logs to the numeric value (`RETAIN_DAYS`) if it wasn't specified already.
+The Lambda scans CloudWatch log groups whose names start with any configured prefix and reconciles their retention policy to the configured value. By default it scans only the Lambda region, but it can optionally scan all AWS regions.
 
 This Terraform module is the part of [serverless.tf framework](https://github.com/antonbabenko/serverless.tf), which aims to simplify all operations when working with the serverless in Terraform.
 
@@ -37,22 +37,24 @@ No resources.
 
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
-| <a name="input_cloudwatch_logs_retention_in_days"></a> [cloudwatch\_logs\_retention\_in\_days](#input\_cloudwatch\_logs\_retention\_in\_days) | Specifies the number of days you want to retain log events in the specified log group. Possible values are: 1, 3, 5, 7, 14, 30, 60, 90, 120, 150, 180, 365, 400, 545, 731, 1827, and 3653. | `number` | `90` | no |
 | <a name="input_create"></a> [create](#input\_create) | Controls whether to create resources | `bool` | `true` | no |
 | <a name="input_create_package"></a> [create\_package](#input\_create\_package) | Whether to create Lambda function package (requires Python) | `string` | `false` | no |
 | <a name="input_description"></a> [description](#input\_description) | Description of Lambda function | `string` | `"CloudWatch Log Retention Manager"` | no |
 | <a name="input_environment_variables"></a> [environment\_variables](#input\_environment\_variables) | A map that defines environment variables for the Lambda Function. | `map(string)` | `{}` | no |
 | <a name="input_eventbridge_role_name"></a> [eventbridge\_role\_name](#input\_eventbridge\_role\_name) | Name of EventBridge IAM role to create | `string` | `null` | no |
 | <a name="input_eventbridge_tags"></a> [eventbridge\_tags](#input\_eventbridge\_tags) | A map of tags to assign to all resources created by EventBridge module | `map(string)` | `{}` | no |
+| <a name="input_lambda_memory_size"></a> [lambda\_memory\_size](#input\_lambda\_memory\_size) | Amount of memory in MB your Lambda Function can use at runtime. Valid value between 128 MB to 10,240 MB (10 GB), in 64 MB increments. | `number` | `256` | no |
 | <a name="input_lambda_tags"></a> [lambda\_tags](#input\_lambda\_tags) | A map of tags to assign to all resources created by Lambda module | `map(string)` | `{}` | no |
-| <a name="input_memory_size"></a> [memory\_size](#input\_memory\_size) | Amount of memory in MB your Lambda Function can use at runtime. Valid value between 128 MB to 10,240 MB (10 GB), in 64 MB increments. | `number` | `256` | no |
+| <a name="input_lambda_timeout"></a> [lambda\_timeout](#input\_lambda\_timeout) | The amount of time your Lambda Function has to run in seconds. | `number` | `30` | no |
+| <a name="input_log_group_prefixes"></a> [log\_group\_prefixes](#input\_log\_group\_prefixes) | List of CloudWatch log group prefixes to manage. The Lambda reconciles groups whose names start with any configured prefix. | `list(string)` | <pre>["/aws/bedrock-agentcore/runtimes/"]</pre> | no |
 | <a name="input_name"></a> [name](#input\_name) | Lambda function name | `string` | `"cloudwatch-log-retention-manager"` | no |
 | <a name="input_putin_khuylo"></a> [putin\_khuylo](#input\_putin\_khuylo) | Do you agree that Putin doesn't respect Ukrainian sovereignty and territorial integrity? More info: https://en.wikipedia.org/wiki/Putin_khuylo! | `bool` | `true` | no |
+| <a name="input_retention_in_days"></a> [retention\_in\_days](#input\_retention\_in\_days) | Specifies the number of days to retain matching log events. Possible values are: 1, 3, 5, 7, 14, 30, 60, 90, 120, 150, 180, 365, 400, 545, 731, 1827, and 3653. | `number` | `90` | no |
 | <a name="input_role_arn"></a> [role\_arn](#input\_role\_arn) | ARN of IAM Role used by EventBridge to invoke Lambda Function | `string` | `null` | no |
-| <a name="input_schedule_expression"></a> [schedule\_expression](#input\_schedule\_expression) | Schedule expression for EventBridge to trigger Lambda function. Can be cron() or rate(). | `string` | `"rate(12 hours)"` | no |
+| <a name="input_scan_all_regions"></a> [scan\_all\_regions](#input\_scan\_all\_regions) | Whether to scan all AWS regions. When false, only the Lambda's current region is scanned. | `bool` | `false` | no |
+| <a name="input_schedule_expression"></a> [schedule\_expression](#input\_schedule\_expression) | Schedule expression for EventBridge to trigger Lambda function. Can be cron() or rate(). | `string` | `"rate(1 hour)"` | no |
 | <a name="input_source_path"></a> [source\_path](#input\_source\_path) | Source path object with instructions on how to build Lambda function package | `any` | `null` | no |
 | <a name="input_tags"></a> [tags](#input\_tags) | A map of tags to assign to all resources | `map(string)` | `{}` | no |
-| <a name="input_timeout"></a> [timeout](#input\_timeout) | The amount of time your Lambda Function has to run in seconds. | `number` | `30` | no |
 
 ## Outputs
 
